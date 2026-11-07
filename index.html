@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Turns ONE</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐶</text></svg>">
+<style>
+:root{--ink:#000;--paper:#fff;--ash:#9a9a9a;--display:"Arial Black",Impact,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--paper);font:18px/1.65 Georgia,serif;overflow-x:hidden;min-height:100vh}
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main,.tape{position:relative;z-index:1}
+main{max-width:760px;margin:0 auto;padding:0 1.2rem 4rem}
+
+.tape{overflow:hidden;white-space:nowrap;background:var(--paper);color:var(--ink);font:900 1rem/2.4 var(--display);letter-spacing:.25em}
+.tape div{display:inline-block;animation:run 22s linear infinite}
+.tape.rev div{animation-direction:reverse}
+@keyframes run{to{transform:translateX(-50%)}}
+
+.hero{text-align:center;padding:1.5rem 0 .5rem}
+.dog{width:min(250px,58vw);animation:tilt 2.6s ease-in-out infinite;cursor:pointer}
+.dog.spin{animation:spin .8s ease-in-out}
+@keyframes spin{to{transform:rotate(360deg) scale(1.15)}}
+@keyframes tilt{50%{transform:rotate(6deg)}}
+.ear{transform-box:fill-box;transform-origin:50% 100%;animation:flap 3s ease-in-out infinite}
+.ear.r{animation-name:flapr;animation-delay:.5s}
+@keyframes flap{0%,70%,100%{transform:none}78%{transform:rotate(-16deg)}86%{transform:rotate(4deg)}}
+@keyframes flapr{0%,70%,100%{transform:none}78%{transform:rotate(16deg)}86%{transform:rotate(-4deg)}}
+.tongue{transform-box:fill-box;transform-origin:50% 0;animation:pant .45s ease-in-out infinite alternate}
+@keyframes pant{to{transform:scaleY(1.4)}}
+.pupil{transition:transform .08s}
+h1{margin:0;font-weight:400}
+h1 .sm{display:block;font-style:italic;font-size:1.5rem}
+h1 .big{display:block;font:900 clamp(7rem,32vw,17rem)/.85 var(--display);-webkit-text-stroke:4px var(--paper);color:transparent;letter-spacing:-.02em}
+.big span{display:inline-block;animation:flick 1.8s steps(1) infinite,jig 1.2s ease-in-out infinite}
+.big span:nth-child(2){animation-delay:.6s,.2s}
+.big span:nth-child(3){animation-delay:1.2s,.4s}
+@keyframes flick{0%,49%{color:transparent}50%,100%{color:var(--paper)}}
+@keyframes jig{50%{transform:translateY(-.06em) rotate(4deg)}}
+
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin:2rem 0 1.2rem}
+.btn,[role=tab]{border:3px solid var(--paper);background:var(--ink);color:var(--paper);font:900 1rem var(--display);padding:.7rem 1.3rem;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s}
+.btn:hover,[role=tab]:hover{background:var(--paper);color:var(--ink);transform:rotate(-2deg) scale(1.05)}
+[role=tab][aria-selected=true]{background:var(--paper);color:var(--ink)}
+:focus-visible{outline:4px dashed var(--paper);outline-offset:3px}
+.panel{border:3px solid var(--paper);padding:1.4rem;background:var(--ink)}
+.panel h2{margin:0 0 .8rem;font:900 1.8rem var(--display)}
+#count{font:900 clamp(1.6rem,7vw,2.6rem) var(--display);margin:.2rem 0 1.2rem}
+dl{margin:0}dt{font-weight:700;margin-top:.8rem}dd{margin:0;color:var(--ash)}
+ul{padding-left:1.2rem}
+.score{font:900 3rem var(--display)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem}
+.tile{aspect-ratio:1;border:3px solid var(--paper);display:grid;place-items:center;text-align:center;overflow:hidden;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/24px 24px;transition:transform .2s}
+.tile:hover{transform:rotate(3deg) scale(1.07)}
+.tile span{background:var(--ink);padding:.2rem .5rem;font:700 .9rem sans-serif}
+.tile img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter .3s}
+.tile:hover img{filter:none}
+.bark{position:fixed;right:1rem;bottom:1rem;z-index:4;width:5.2rem;height:5.2rem;border-radius:50%;padding:0}
+footer{text-align:center;color:var(--ash);margin-top:2rem;font-style:italic}
+
+.paw{position:fixed;z-index:2;pointer-events:none;font-size:1.6rem;filter:brightness(0) invert(1);transform:translate(-50%,-50%) rotate(var(--r));animation:fade 1.4s forwards}
+@keyframes fade{to{opacity:0;transform:translate(-50%,-110%) rotate(var(--r)) scale(.6)}}
+.woof{position:fixed;z-index:3;pointer-events:none;font:900 clamp(2rem,8vw,5rem) var(--display);background:var(--paper);color:var(--ink);padding:.1em .3em;transform:rotate(-6deg);animation:pop .9s forwards}
+@keyframes pop{0%{transform:scale(0) rotate(-12deg)}25%{transform:scale(1.2) rotate(-6deg)}100%{transform:scale(1) rotate(-6deg);opacity:0}}
+
+#game{display:block;border:3px solid var(--paper);background:var(--ink);max-width:100%;touch-action:none;margin:.8rem 0}
+.pad{display:grid;grid-template-columns:repeat(3,3.2rem);gap:.4rem;margin:.6rem 0 1rem}
+.pad .btn{padding:.5rem 0;text-align:center}
+.pad [data-d=up]{grid-column:2}.pad [data-d=left]{grid-row:2;grid-column:1}.pad [data-d=down]{grid-row:2;grid-column:2}.pad [data-d=right]{grid-row:2;grid-column:3}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.big span{color:var(--paper)}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="tape"></div>
+
+<main>
+  <section class="hero">
+    <svg class="dog" viewBox="0 0 240 244" role="img" aria-label="Angular cartoon Patterdale terrier in a party hat">
+      <polygon points="52,244 78,176 162,176 188,244" fill="#000" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+      <polygon points="120,240 96,180 144,180" fill="#fff"/>
+      <g class="ear l"><polygon points="64,82 44,20 110,66" fill="#000" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></g>
+      <g class="ear r"><polygon points="176,82 196,20 130,66" fill="#000" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></g>
+      <polygon points="58,80 182,80 174,132 146,180 94,180 66,132" fill="#000" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M74 98 L106 108 M166 98 L134 108" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+      <g><circle cx="92" cy="120" r="12" fill="#fff"/><circle class="pupil" cx="92" cy="120" r="6" fill="#000"/></g>
+      <g><circle cx="148" cy="120" r="12" fill="#fff"/><circle class="pupil" cx="148" cy="120" r="6" fill="#000"/></g>
+      <path class="tongue" d="M112 186 q8 28 16 0 z" fill="#aaa" stroke="#000" stroke-width="3"/>
+      <path d="M120 176 v10 M120 186 q-9 6 -18 -2 M120 186 q9 6 18 -2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="106,160 134,160 126,174 114,174" fill="#3a3a3a" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+      <polygon points="120,6 92,84 148,84" fill="#000" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="119" cy="40" r="4" fill="#fff"/><circle cx="107" cy="60" r="4" fill="#fff"/><circle cx="133" cy="60" r="4" fill="#fff"/>
+      <circle cx="120" cy="6" r="9" fill="#fff"/>
+    </svg>
+    <h1 aria-label="Turns one">
+      <span class="sm"><span data-name>Romeo</span> turns</span>
+      <span class="big" role="img" aria-label="ONE"><span>O</span><span>N</span><span>E</span></span>
+    </h1>
+  </section>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t-details" aria-controls="details" aria-selected="true">Details</button>
+    <button class="tab" role="tab" id="t-treats" aria-controls="treats" aria-selected="false">Treats</button>
+    <button class="tab" role="tab" id="t-snake" aria-controls="snake" aria-selected="false">Snake</button>
+    <button class="tab" role="tab" id="t-photos" aria-controls="photos" aria-selected="false">Photos</button>
+    <button class="tab" role="tab" id="t-rsvp" aria-controls="rsvp" aria-selected="false">RSVP</button>
+  </div>
+
+  <section class="panel" id="details" role="tabpanel" aria-labelledby="t-details">
+    <h2>The party starts in</h2>
+    <div id="count" aria-live="off"></div>
+    <dl>
+      <dt>The dog</dt><dd>Patterdale terrier. Black all over, white chest, zero chill.</dd>
+      <dt>When</dt><dd id="when"></dd>
+      <dt>Where</dt><dd id="where"></dd>
+      <dt>Dress code</dt><dd>Black, white, or fur.</dd>
+      <dt>Bring</dt><dd>Your best zoomies.</dd>
+    </dl>
+  </section>
+
+  <section class="panel" id="treats" role="tabpanel" aria-labelledby="t-treats" hidden>
+    <h2>On the menu</h2>
+    <ul>
+      <li>Pupcakes</li>
+      <li>Peanut-butter bones</li>
+      <li>Water bowls for every dog</li>
+      <li>Cake, coffee and snacks for the humans</li>
+    </ul>
+    <p>Treats given to <span data-name>Romeo</span> so far: <span class="score" id="tc">0</span></p>
+    <button class="btn" id="treatBtn">Give a treat</button>
+  </section>
+
+  <section class="panel" id="snake" role="tabpanel" aria-labelledby="t-snake" hidden>
+    <h2><span data-name>Romeo</span>’s Snake</h2>
+    <p>Guide the pup to the bones. Arrow keys, WASD, swipe, or the buttons. Score: <b id="sc">0</b> Best: <b id="best">0</b></p>
+    <canvas id="game" width="300" height="300"></canvas>
+    <div class="pad"><button class="btn" data-d="up" aria-label="Up">▲</button><button class="btn" data-d="left" aria-label="Left">◀</button><button class="btn" data-d="down" aria-label="Down">▼</button><button class="btn" data-d="right" aria-label="Right">▶</button></div>
+    <button class="btn" id="startBtn">Start</button>
+  </section>
+
+  <section class="panel" id="photos" role="tabpanel" aria-labelledby="t-photos" hidden>
+    <h2>Year one</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="panel" id="rsvp" role="tabpanel" aria-labelledby="t-rsvp" hidden>
+    <h2>Are you coming?</h2>
+    <p>Email us who’s coming, humans and dogs. We’ll reply with the address.</p>
+    <a class="btn" id="rsvpLink" href="#">RSVP by email</a>
+  </section>
+
+  <footer>Made with an unreasonable number of treats.</footer>
+</main>
+
+<div class="tape rev"></div>
+<button class="btn bark" id="bark" aria-label="Bark">BARK</button>
+
+<script>
+// ===== Edit these =====
+const CONFIG = {
+  name: 'Romeo',
+  date: '2026-12-12T14:00:00',                       // party date and time
+  where: 'Address sent with your RSVP reply',        // keep your real address off the page
+  photos: [],                                        // e.g. ['images/one.jpg', 'images/two.jpg']
+  mail: { user: 'yourname', domain: 'example.com' }  // use a throwaway or alias address
+};
+// ======================
+
+const $ = id => document.getElementById(id);
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+document.title = CONFIG.name + ' turns ONE';
+document.querySelectorAll('[data-name]').forEach(e => e.textContent = CONFIG.name);
+$('where').textContent = CONFIG.where;
+$('when').textContent = new Date(CONFIG.date).toLocaleString('en-IE', {weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'});
+
+// Marquee tape
+const unit = 'WOOF ✱ BARK ✱ ARF ✱ BORK ✱ '.repeat(8);
+document.querySelectorAll('.tape').forEach(t => t.innerHTML = '<div>' + unit + unit + '</div>');
+
+// Tabs
+const tabs = [...document.querySelectorAll('[role=tab]')];
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.setAttribute('aria-selected', x === t));
+  document.querySelectorAll('.panel').forEach(p => p.hidden = p.id !== t.getAttribute('aria-controls'));
+}));
+
+// Countdown
+function tick() {
+  const ms = new Date(CONFIG.date) - Date.now();
+  if (ms <= 0) { $('count').textContent = 'It’s happening. Zoomies engaged.'; return; }
+  const s = ms / 1000 | 0;
+  $('count').textContent = `${s / 86400 | 0}d ${s % 86400 / 3600 | 0}h ${s % 3600 / 60 | 0}m ${s % 60}s`;
+}
+tick(); setInterval(tick, 1000);
+
+// Photos (grayscale, colour on hover)
+for (let i = 0; i < Math.max(CONFIG.photos.length, 6); i++) {
+  const d = document.createElement('div'); d.className = 'tile';
+  if (CONFIG.photos[i]) {
+    const im = document.createElement('img');
+    im.src = CONFIG.photos[i]; im.alt = `${CONFIG.name}, photo ${i + 1}`; im.loading = 'lazy';
+    d.append(im);
+  } else d.innerHTML = '<span>Photo coming soon</span>';
+  $('grid').append(d);
+}
+
+// RSVP mailto, assembled in JS so the address isn't plain text in the HTML
+const m = CONFIG.mail;
+$('rsvpLink').href = `mailto:${m.user}@${m.domain}?subject=${encodeURIComponent('RSVP: ' + CONFIG.name + '’s 1st birthday')}&body=${encodeURIComponent('Names attending:\nNumber of humans:\nNumber of dogs:\n')}`;
+
+// Fireworks
+const cv = $('fx'), cx = cv.getContext('2d');
+let W, H, parts = [];
+const size = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; };
+size(); addEventListener('resize', size);
+function burst(x, y) {
+  const n = 70, g = 150 + Math.random() * 105 | 0, ring = Math.random() < .4;
+  for (let i = 0; i < n; i++) {
+    const a = Math.PI * 2 * i / n, s = ring ? 4.5 : 1.5 + Math.random() * 4.5;
+    parts.push({x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, l: 1, g});
+  }
+}
+(function loop() {
+  cx.fillStyle = 'rgba(0,0,0,.18)'; cx.fillRect(0, 0, W, H);
+  for (const p of parts) {
+    p.vx *= .985; p.vy = p.vy * .985 + .05; p.x += p.vx; p.y += p.vy; p.l -= .011;
+    cx.fillStyle = `rgba(${p.g},${p.g},${p.g},${Math.max(p.l, 0)})`; cx.fillRect(p.x, p.y, 2.5, 2.5);
+  }
+  parts = parts.filter(p => p.l > 0);
+  requestAnimationFrame(loop);
+})();
+if (!calm) setInterval(() => burst(innerWidth * (.1 + Math.random() * .8), innerHeight * (.1 + Math.random() * .5)), 1500);
+document.addEventListener('pointerdown', e => burst(e.clientX, e.clientY));
+
+// Paw-print trail
+let lx = 0, ly = 0, flip = 0;
+addEventListener('pointermove', e => {
+  if (calm || Math.hypot(e.clientX - lx, e.clientY - ly) < 70) return;
+  lx = e.clientX; ly = e.clientY;
+  const s = document.createElement('span');
+  s.className = 'paw'; s.textContent = '🐾';
+  s.style.left = lx + 'px'; s.style.top = ly + 'px';
+  s.style.setProperty('--r', (flip++ % 2 ? 18 : -18) + 'deg');
+  document.body.append(s); setTimeout(() => s.remove(), 1400);
+});
+
+// Eyes follow the pointer
+const pupils = [...document.querySelectorAll('.pupil')];
+addEventListener('pointermove', e => pupils.forEach(p => {
+  const r = p.parentNode.getBoundingClientRect();
+  const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+  const d = Math.hypot(dx, dy) || 1, k = Math.min(7, d / 20);
+  p.style.transform = `translate(${dx / d * k}px,${dy / d * k}px)`;
+}));
+
+// Bark
+let ac;
+function bark() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (AC) {
+    ac = ac || new AC();
+    [0, .22].forEach(t => {
+      const o = ac.createOscillator(), g = ac.createGain(), f = ac.createBiquadFilter(), s = ac.currentTime + t;
+      o.type = 'sawtooth'; f.type = 'lowpass'; f.frequency.value = 900;
+      o.frequency.setValueAtTime(420, s); o.frequency.exponentialRampToValueAtTime(130, s + .16);
+      g.gain.setValueAtTime(.0001, s); g.gain.exponentialRampToValueAtTime(.5, s + .02); g.gain.exponentialRampToValueAtTime(.0001, s + .18);
+      o.connect(f).connect(g).connect(ac.destination); o.start(s); o.stop(s + .2);
+    });
+  }
+  const w = document.createElement('div');
+  w.className = 'woof'; w.textContent = ['WOOF!', 'ARF!', 'BORK!', 'YAP!'][Math.random() * 4 | 0];
+  w.style.left = (8 + Math.random() * 65) + 'vw'; w.style.top = (12 + Math.random() * 55) + 'vh';
+  document.body.append(w); setTimeout(() => w.remove(), 900);
+  burst(innerWidth * Math.random(), innerHeight * .4 * Math.random() + 60);
+}
+$('bark').addEventListener('click', bark);
+
+// Treat counter
+let treats = 0;
+$('treatBtn').addEventListener('click', () => { $('tc').textContent = ++treats; if (treats % 10 === 0) bark(); });
+
+// Click the dog for a spin
+document.querySelector('.dog').addEventListener('click', e => {
+  const d = e.currentTarget; d.classList.remove('spin'); void d.getBoundingClientRect(); d.classList.add('spin');
+  setTimeout(() => d.classList.remove('spin'), 850); bark();
+});
+
+// Dog Snake
+const gc = $('game'), g = gc.getContext('2d'), N = 15, C = 20;
+let snake, dir, next, food, score = 0, timer = null, best = 0;
+try { best = +localStorage.getItem('romeoBest') || 0; } catch (e) {}
+$('best').textContent = best;
+function place() { do { food = {x: Math.random() * N | 0, y: Math.random() * N | 0}; } while (snake.some(s => s.x === food.x && s.y === food.y)); }
+function reset() { snake = [{x:7,y:7},{x:6,y:7},{x:5,y:7}]; dir = next = {x:1,y:0}; score = 0; $('sc').textContent = 0; place(); draw(); }
+function draw() {
+  g.fillStyle = '#000'; g.fillRect(0, 0, 300, 300);
+  g.font = '16px serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  try { g.filter = 'grayscale(1) brightness(2)'; } catch (e) {}
+  g.fillText('🦴', food.x * C + 10, food.y * C + 11); g.filter = 'none';
+  snake.forEach((s, i) => {
+    const x = s.x * C, y = s.y * C;
+    if (i) { g.strokeStyle = '#fff'; g.lineWidth = 2; g.strokeRect(x + 3, y + 3, 14, 14); return; }
+    g.fillStyle = '#fff'; g.fillRect(x + 1, y + 1, 18, 18);
+    g.fillStyle = '#000';
+    g.beginPath(); g.moveTo(x + 1, y + 1); g.lineTo(x + 8, y + 1); g.lineTo(x + 1, y + 9); g.fill();
+    g.beginPath(); g.moveTo(x + 19, y + 1); g.lineTo(x + 12, y + 1); g.lineTo(x + 19, y + 9); g.fill();
+    g.fillRect(x + 5, y + 9, 3, 3); g.fillRect(x + 12, y + 9, 3, 3);
+  });
+}
+function stop() { clearInterval(timer); timer = null; }
+function over() {
+  stop(); bark();
+  if (score > best) { best = score; try { localStorage.setItem('romeoBest', best); } catch (e) {} $('best').textContent = best; }
+  g.fillStyle = 'rgba(0,0,0,.75)'; g.fillRect(0, 0, 300, 300); g.fillStyle = '#fff'; g.textAlign = 'center';
+  g.font = '900 30px Impact,sans-serif'; g.fillText('GAME OVER', 150, 130);
+  g.font = '16px Georgia,serif'; g.fillText(CONFIG.name + ' ate ' + score + '. Press Start.', 150, 165);
+}
+function step() {
+  dir = next;
+  const h = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+  if (h.x < 0 || h.y < 0 || h.x >= N || h.y >= N || snake.some(s => s.x === h.x && s.y === h.y)) return over();
+  snake.unshift(h);
+  if (h.x === food.x && h.y === food.y) {
+    $('sc').textContent = ++score;
+    const r = gc.getBoundingClientRect();
+    burst(r.left + (h.x + .5) * C * r.width / 300, r.top + (h.y + .5) * C * r.height / 300);
+    place(); stop(); timer = setInterval(step, Math.max(60, 130 - score * 4));
+  } else snake.pop();
+  draw();
+}
+function turn(dx, dy) { if (dx === -dir.x && dy === -dir.y) return; next = {x: dx, y: dy}; }
+const keys = {ArrowUp:[0,-1],w:[0,-1],ArrowDown:[0,1],s:[0,1],ArrowLeft:[-1,0],a:[-1,0],ArrowRight:[1,0],d:[1,0]};
+addEventListener('keydown', e => { if (timer && keys[e.key]) { e.preventDefault(); turn(...keys[e.key]); } });
+document.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => { if (timer) turn(...{up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[b.dataset.d]); }));
+let sx, sy;
+gc.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; });
+gc.addEventListener('pointerup', e => {
+  if (!timer) return;
+  const dx = e.clientX - sx, dy = e.clientY - sy;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
+  Math.abs(dx) > Math.abs(dy) ? turn(Math.sign(dx), 0) : turn(0, Math.sign(dy));
+});
+$('startBtn').addEventListener('click', () => { stop(); reset(); timer = setInterval(step, 130); });
+tabs.forEach(t => t.addEventListener('click', stop));
+reset();
+</script>
+</body>
+</html>
