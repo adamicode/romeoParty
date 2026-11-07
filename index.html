@@ -67,6 +67,9 @@ label{display:block;margin:.9rem 0;font-weight:700}
 label small{color:var(--ash);font-weight:400}
 input{display:block;width:100%;margin-top:.3rem;padding:.6rem;background:var(--ink);color:var(--paper);border:3px solid var(--paper);border-radius:0;font:inherit}
 .note{color:var(--ash);font-style:italic}
+.rgb{margin:1.2rem 0 0;font:900 clamp(1.3rem,5vw,2rem)/1.35 var(--display);color:var(--paper)}
+.rgb .l{display:inline-block;animation:rgb 1.2s steps(1) infinite}
+@keyframes rgb{0%{color:#ff2a2a}33%{color:#2aff4a}66%{color:#4d7bff}}
 @media (pointer:coarse){.pad{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.big span{color:var(--paper)}}
 </style>
@@ -97,6 +100,7 @@ input{display:block;width:100%;margin-top:.3rem;padding:.6rem;background:var(--i
       <span class="sm"><span data-name>Romeo</span> turns</span>
       <span class="big" role="img" aria-label="ONE"><span>O</span><span>N</span><span>E</span></span>
     </h1>
+    <h2 class="rgb" id="celebrate"></h2>
   </section>
 
   <div class="tabs" role="tablist">
@@ -142,9 +146,9 @@ input{display:block;width:100%;margin-top:.3rem;padding:.6rem;background:var(--i
     <h2>Are you coming?</h2>
     <p>Fill this in for Romeo’s staff. It opens an email to send, and we’ll reply with the address.</p>
     <label>Your name(s)<input id="rName" autocomplete="name" placeholder="Who’s coming?"></label>
-    <label>Humans attending<input id="rHeads" placeholder="e.g. 2 humans, 1 dog"></label>
+    <label>Humans and dogs attending<input id="rHeads" placeholder="e.g. 2 humans, 1 dog"></label>
     <label>Treats you’re bringing for Romeo <small>(bribes accepted)</small><input id="rTreats" placeholder="Bones, belly rubs, a tennis ball…"></label>
-    <label>Dietary requirements<input id="rDiet" placeholder="Allergies, vegan, no chicken…"></label>
+    <label>Dietary requirements <small>(humans and dogs, no judgement)</small><input id="rDiet" placeholder="Allergies, vegan, no chicken…"></label>
     <button class="btn" id="rsvpBtn" type="button">Send RSVP by email</button>
     <p class="note" id="rsvpNote"></p>
   </section>
@@ -172,6 +176,22 @@ document.title = CONFIG.name + ' turns ONE';
 document.querySelectorAll('[data-name]').forEach(e => e.textContent = CONFIG.name);
 $('where').textContent = CONFIG.where;
 $('when').textContent = new Date(CONFIG.date).toLocaleString('en-IE', {weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'});
+
+// RGB flashing subtitle (each letter flashes out of step with its neighbour)
+const msg = `Celebrating ${CONFIG.name}’s special first birthday!`, sub = $('celebrate');
+sub.setAttribute('aria-label', msg);
+let li = 0;
+msg.split(' ').forEach((w, wi, all) => {
+  const word = document.createElement('span');
+  word.style.display = 'inline-block'; word.setAttribute('aria-hidden', 'true');
+  [...w].forEach(ch => {
+    const l = document.createElement('span');
+    l.className = 'l'; l.textContent = ch; l.style.animationDelay = `-${(li++ * .09).toFixed(2)}s`;
+    word.append(l);
+  });
+  sub.append(word);
+  if (wi < all.length - 1) sub.append(' ');
+});
 
 // Marquee tape
 const unit = 'WOOF ✱ BARK ✱ ARF ✱ BORK ✱ '.repeat(8);
