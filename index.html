@@ -51,12 +51,6 @@ h1 .big{display:block;font:900 clamp(7rem,32vw,17rem)/.85 var(--display);-webkit
 dl{margin:0}dt{font-weight:700;margin-top:.8rem}dd{margin:0;color:var(--ash)}
 ul{padding-left:1.2rem}
 .score{font:900 3rem var(--display)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem}
-.tile{aspect-ratio:1;border:3px solid var(--paper);display:grid;place-items:center;text-align:center;overflow:hidden;background:repeating-conic-gradient(#fff 0 25%,#000 0 50%) 0 0/24px 24px;transition:transform .2s}
-.tile:hover{transform:rotate(3deg) scale(1.07)}
-.tile span{background:var(--ink);padding:.2rem .5rem;font:700 .9rem sans-serif}
-.tile img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter .3s}
-.tile:hover img{filter:none}
 .bark{position:fixed;right:1rem;bottom:1rem;z-index:4;width:5.2rem;height:5.2rem;border-radius:50%;padding:0}
 footer{text-align:center;color:var(--ash);margin-top:2rem;font-style:italic}
 
@@ -69,6 +63,11 @@ footer{text-align:center;color:var(--ash);margin-top:2rem;font-style:italic}
 .pad{display:grid;grid-template-columns:repeat(3,3.2rem);gap:.4rem;margin:.6rem 0 1rem}
 .pad .btn{padding:.5rem 0;text-align:center}
 .pad [data-d=up]{grid-column:2}.pad [data-d=left]{grid-row:2;grid-column:1}.pad [data-d=down]{grid-row:2;grid-column:2}.pad [data-d=right]{grid-row:2;grid-column:3}
+label{display:block;margin:.9rem 0;font-weight:700}
+label small{color:var(--ash);font-weight:400}
+input{display:block;width:100%;margin-top:.3rem;padding:.6rem;background:var(--ink);color:var(--paper);border:3px solid var(--paper);border-radius:0;font:inherit}
+.note{color:var(--ash);font-style:italic}
+@media (pointer:coarse){.pad{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.big span{color:var(--paper)}}
 </style>
 </head>
@@ -103,8 +102,7 @@ footer{text-align:center;color:var(--ash);margin-top:2rem;font-style:italic}
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="t-details" aria-controls="details" aria-selected="true">Details</button>
     <button class="tab" role="tab" id="t-treats" aria-controls="treats" aria-selected="false">Treats</button>
-    <button class="tab" role="tab" id="t-snake" aria-controls="snake" aria-selected="false">Snake</button>
-    <button class="tab" role="tab" id="t-photos" aria-controls="photos" aria-selected="false">Photos</button>
+    <button class="tab" role="tab" id="t-snake" aria-controls="snake" aria-selected="false">Treat Hunt</button>
     <button class="tab" role="tab" id="t-rsvp" aria-controls="rsvp" aria-selected="false">RSVP</button>
   </div>
 
@@ -133,22 +131,22 @@ footer{text-align:center;color:var(--ash);margin-top:2rem;font-style:italic}
   </section>
 
   <section class="panel" id="snake" role="tabpanel" aria-labelledby="t-snake" hidden>
-    <h2><span data-name>Romeo</span>’s Snake</h2>
-    <p>Guide the pup to the bones. Arrow keys, WASD, swipe, or the buttons. Score: <b id="sc">0</b> Best: <b id="best">0</b></p>
+    <h2>Romey’s Treat Hunt</h2>
+    <p>Guide the pup to the bones. On a computer: arrow keys or WASD. On a phone: tap the board to start, then drag your finger and the dog follows it. Score: <b id="sc">0</b> Best: <b id="best">0</b></p>
     <canvas id="game" width="300" height="300"></canvas>
     <div class="pad"><button class="btn" data-d="up" aria-label="Up">▲</button><button class="btn" data-d="left" aria-label="Left">◀</button><button class="btn" data-d="down" aria-label="Down">▼</button><button class="btn" data-d="right" aria-label="Right">▶</button></div>
     <button class="btn" id="startBtn">Start</button>
   </section>
 
-  <section class="panel" id="photos" role="tabpanel" aria-labelledby="t-photos" hidden>
-    <h2>Year one</h2>
-    <div class="grid" id="grid"></div>
-  </section>
-
   <section class="panel" id="rsvp" role="tabpanel" aria-labelledby="t-rsvp" hidden>
     <h2>Are you coming?</h2>
-    <p>Email us who’s coming, humans and dogs. We’ll reply with the address.</p>
-    <a class="btn" id="rsvpLink" href="#">RSVP by email</a>
+    <p>Fill this in for Romeo’s staff. It opens an email to send, and we’ll reply with the address.</p>
+    <label>Your name(s)<input id="rName" autocomplete="name" placeholder="Who’s coming?"></label>
+    <label>Humans and dogs attending<input id="rHeads" placeholder="e.g. 2 humans, 1 dog"></label>
+    <label>Treats you’re bringing for Romeo <small>(bribes accepted)</small><input id="rTreats" placeholder="Bones, belly rubs, a tennis ball…"></label>
+    <label>Dietary requirements <small>(humans and dogs, no judgement)</small><input id="rDiet" placeholder="Allergies, vegan, no chicken…"></label>
+    <button class="btn" id="rsvpBtn" type="button">Send RSVP by email</button>
+    <p class="note" id="rsvpNote"></p>
   </section>
 
   <footer>Made with an unreasonable number of treats.</footer>
@@ -161,9 +159,8 @@ footer{text-align:center;color:var(--ash);margin-top:2rem;font-style:italic}
 // ===== Edit these =====
 const CONFIG = {
   name: 'Romeo',
-  date: '2026-12-12T14:00:00',                       // party date and time
+  date: '2026-11-20T18:00:00',                       // party date and time
   where: 'Address sent with your RSVP reply',        // keep your real address off the page
-  photos: [],                                        // e.g. ['images/one.jpg', 'images/two.jpg']
   mail: { user: 'yourname', domain: 'example.com' }  // use a throwaway or alias address
 };
 // ======================
@@ -196,20 +193,14 @@ function tick() {
 }
 tick(); setInterval(tick, 1000);
 
-// Photos (grayscale, colour on hover)
-for (let i = 0; i < Math.max(CONFIG.photos.length, 6); i++) {
-  const d = document.createElement('div'); d.className = 'tile';
-  if (CONFIG.photos[i]) {
-    const im = document.createElement('img');
-    im.src = CONFIG.photos[i]; im.alt = `${CONFIG.name}, photo ${i + 1}`; im.loading = 'lazy';
-    d.append(im);
-  } else d.innerHTML = '<span>Photo coming soon</span>';
-  $('grid').append(d);
-}
-
-// RSVP mailto, assembled in JS so the address isn't plain text in the HTML
-const m = CONFIG.mail;
-$('rsvpLink').href = `mailto:${m.user}@${m.domain}?subject=${encodeURIComponent('RSVP: ' + CONFIG.name + '’s 1st birthday')}&body=${encodeURIComponent('Names attending:\nNumber of humans:\nNumber of dogs:\n')}`;
+// RSVP: builds the email in JS so the address isn't plain text in the HTML
+const addr = CONFIG.mail.user + '@' + CONFIG.mail.domain;
+$('rsvpBtn').addEventListener('click', () => {
+  const v = id => $(id).value.trim() || '(not given)';
+  const body = `Name(s): ${v('rName')}\nAttending: ${v('rHeads')}\nTreats for ${CONFIG.name}: ${v('rTreats')}\nDietary requirements: ${v('rDiet')}\n`;
+  location.href = `mailto:${addr}?subject=${encodeURIComponent('RSVP: ' + CONFIG.name + '’s 1st birthday')}&body=${encodeURIComponent(body)}`;
+  $('rsvpNote').textContent = `If your email app didn’t open, send those details to ${addr}.`;
+});
 
 // Fireworks
 const cv = $('fx'), cx = cv.getContext('2d');
@@ -335,15 +326,23 @@ function turn(dx, dy) { if (dx === -dir.x && dy === -dir.y) return; next = {x: d
 const keys = {ArrowUp:[0,-1],w:[0,-1],ArrowDown:[0,1],s:[0,1],ArrowLeft:[-1,0],a:[-1,0],ArrowRight:[1,0],d:[1,0]};
 addEventListener('keydown', e => { if (timer && keys[e.key]) { e.preventDefault(); turn(...keys[e.key]); } });
 document.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => { if (timer) turn(...{up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[b.dataset.d]); }));
-let sx, sy;
-gc.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; });
-gc.addEventListener('pointerup', e => {
+// Finger/pointer steering: the dog heads toward wherever you touch or drag
+function startGame() { stop(); reset(); timer = setInterval(step, 130); }
+function aim(e) {
   if (!timer) return;
-  const dx = e.clientX - sx, dy = e.clientY - sy;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
-  Math.abs(dx) > Math.abs(dy) ? turn(Math.sign(dx), 0) : turn(0, Math.sign(dy));
-});
-$('startBtn').addEventListener('click', () => { stop(); reset(); timer = setInterval(step, 130); });
+  const r = gc.getBoundingClientRect();
+  const dx = (e.clientX - r.left) / r.width * N - (snake[0].x + .5);
+  const dy = (e.clientY - r.top) / r.height * N - (snake[0].y + .5);
+  if (Math.abs(dx) < .5 && Math.abs(dy) < .5) return;
+  const sx = Math.sign(dx) || 1, sy = Math.sign(dy) || 1;
+  const opts = Math.abs(dx) > Math.abs(dy) ? [[sx, 0], [0, sy]] : [[0, sy], [sx, 0]];
+  for (const [x, y] of opts) if (!(x === -dir.x && y === -dir.y)) { next = {x, y}; break; }
+}
+let held = false;
+gc.addEventListener('pointerdown', e => { held = true; gc.setPointerCapture(e.pointerId); timer ? aim(e) : startGame(); });
+gc.addEventListener('pointermove', e => { if (held) aim(e); });
+['pointerup', 'pointercancel'].forEach(t => gc.addEventListener(t, () => held = false));
+$('startBtn').addEventListener('click', startGame);
 tabs.forEach(t => t.addEventListener('click', stop));
 reset();
 </script>
