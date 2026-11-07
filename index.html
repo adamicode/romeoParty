@@ -70,6 +70,7 @@ input{display:block;width:100%;margin-top:.3rem;padding:.6rem;background:var(--i
 .rgb{margin:1.2rem 0 0;font:900 clamp(1.3rem,5vw,2rem)/1.35 var(--display);color:var(--paper)}
 .rgb .l{display:inline-block;animation:rgb 1.2s steps(1) infinite}
 @keyframes rgb{0%{color:#ff2a2a}33%{color:#2aff4a}66%{color:#4d7bff}}
+.byob{border:3px dashed var(--paper);padding:.8rem 1rem;margin:1rem 0}
 @media (pointer:coarse){.pad{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.big span{color:var(--paper)}}
 </style>
@@ -130,6 +131,7 @@ input{display:block;width:100%;margin-top:.3rem;padding:.6rem;background:var(--i
       <li>Water bowls for every dog</li>
       <li>Cake, coffee and snacks for the humans</li>
     </ul>
+    <p class="byob"><b>BYOB: Bring Your Own Bone.</b> Humans, bring one for Romeo. Dogs, bring your own and defend it yourselves. The management accepts no responsibility for bone disputes.</p>
     <p>Treats given to <span data-name>Romeo</span> so far: <span class="score" id="tc">0</span></p>
     <button class="btn" id="treatBtn">Give a treat</button>
   </section>
